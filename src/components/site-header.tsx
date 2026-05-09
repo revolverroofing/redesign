@@ -1,9 +1,10 @@
 import Link from "next/link";
 
 const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#why-us", label: "Why Us" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#services", label: "Services" },
+  { href: "/#why-us", label: "Why Us" },
+  { href: "/hail", label: "Hail Tracker" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export function SiteHeader() {
@@ -19,17 +20,17 @@ export function SiteHeader() {
         </Link>
         <nav aria-label="Primary" className="hidden gap-8 text-sm font-medium text-zinc-700 sm:flex dark:text-zinc-300">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-zinc-950 dark:hover:text-white">
+            <Link key={link.href} href={link.href} className="hover:text-zinc-950 dark:hover:text-white">
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
-        <a
-          href="#contact"
+        <Link
+          href="/#contact"
           className="inline-flex h-9 items-center rounded-full bg-orange-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-orange-700"
         >
           Get a Quote
-        </a>
+        </Link>
       </div>
     </header>
   );
