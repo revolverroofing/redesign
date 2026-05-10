@@ -17,7 +17,8 @@ describe("hail-data", () => {
   });
 
   it("places lat/lng inside the SVG viewport when within region bounds", () => {
-    const { x, y } = projectLatLng(40.5, -74.5, 800, 500);
+    // Austin, TX
+    const { x, y } = projectLatLng(30.2672, -97.7431, 800, 500);
     expect(x).toBeGreaterThan(0);
     expect(x).toBeLessThan(800);
     expect(y).toBeGreaterThan(0);

@@ -8,7 +8,9 @@ import {
   REFERENCE_CITIES,
   SEVERITY_COLOR,
   SEVERITY_LABEL,
+  TEXAS_OUTLINE,
   buildingsById,
+  buildingsImpactedBy,
   commercialBuildings,
   eventsById,
   hailEvents,
@@ -16,7 +18,7 @@ import {
 } from "@/lib/hail-data";
 
 const MAP_W = 880;
-const MAP_H = 560;
+const MAP_H = 620;
 
 type SeverityFilter = Severity | "all";
 
@@ -27,37 +29,7 @@ const SEVERITY_FILTERS: ReadonlyArray<{ value: SeverityFilter; label: string }> 
   { value: "minor", label: "Minor" },
 ];
 
-const NJ_POLYGON: ReadonlyArray<[number, number]> = [
-  [41.32, -74.69],
-  [41.01, -73.9],
-  [40.5, -74.04],
-  [40.1, -74.04],
-  [39.55, -74.4],
-  [39.55, -75.55],
-  [40.07, -74.86],
-  [40.58, -75.19],
-  [40.98, -75.13],
-];
-
-const NY_POLYGON: ReadonlyArray<[number, number]> = [
-  [41.4, -74.69],
-  [41.4, -73.3],
-  [40.55, -73.3],
-  [40.5, -74.04],
-  [41.01, -73.9],
-];
-
-const PA_POLYGON: ReadonlyArray<[number, number]> = [
-  [41.4, -76.5],
-  [41.4, -74.69],
-  [40.98, -75.13],
-  [40.58, -75.19],
-  [40.07, -74.86],
-  [39.55, -75.55],
-  [39.55, -76.5],
-];
-
-function polygonPath(coords: ReadonlyArray<[number, number]>) {
+function polygonPath(coords: ReadonlyArray<readonly [number, number]>) {
   return coords
     .map(([lat, lng], i) => {
       const { x, y } = projectLatLng(lat, lng, MAP_W, MAP_H);
@@ -68,7 +40,7 @@ function polygonPath(coords: ReadonlyArray<[number, number]>) {
 }
 
 function eventRadius(sizeIn: number) {
-  return Math.min(22, Math.max(6, sizeIn * 9));
+  return Math.min(26, Math.max(6, sizeIn * 6.5));
 }
 
 function buildingRisk(ageYears: number): "low" | "elevated" | "high" {
@@ -145,18 +117,18 @@ export function HailTracker() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="flex flex-col gap-3">
           <p className="text-xs font-medium uppercase tracking-wide text-orange-700 dark:text-orange-400">
-            Live tracker
+            NOAA Storm Events · Texas
           </p>
           <h2
             id="hail-tracker-heading"
             className="text-3xl font-semibold tracking-tight text-zinc-950 sm:text-4xl dark:text-white"
           >
-            Tri-State hail map
+            Texas hail map
           </h2>
           <p className="max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
-            Verified storm reports cross-referenced against commercial roofs we
-            inspect. Click a storm or building to see impact details and
-            recommended next steps.
+            Verified hail reports from the NOAA Storm Events Database, plotted
+            against the commercial roofs we monitor across Texas. Click a storm
+            or building to see impact details and recommended next steps.
           </p>
         </div>
 
@@ -203,7 +175,7 @@ export function HailTracker() {
           <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
             <svg
               role="img"
-              aria-label="Map of the Tri-State area showing recent hail events and tracked commercial buildings"
+              aria-label="Map of Texas showing recent hail events and tracked commercial buildings"
               viewBox={`0 0 ${MAP_W} ${MAP_H}`}
               className="block h-auto w-full"
             >
@@ -231,35 +203,23 @@ export function HailTracker() {
               <rect width={MAP_W} height={MAP_H} fill="url(#hail-grid)" />
 
               <path
-                d={polygonPath(PA_POLYGON)}
-                fill="#cbd5e1"
-                stroke="#94a3b8"
-                strokeWidth="1.5"
-                opacity="0.85"
-              />
-              <path
-                d={polygonPath(NJ_POLYGON)}
-                fill="#a7f3d0"
-                stroke="#34d399"
-                strokeWidth="1.5"
-                opacity="0.85"
-              />
-              <path
-                d={polygonPath(NY_POLYGON)}
-                fill="#bfdbfe"
-                stroke="#60a5fa"
-                strokeWidth="1.5"
-                opacity="0.85"
+                d={polygonPath(TEXAS_OUTLINE)}
+                fill="#fef3c7"
+                stroke="#b45309"
+                strokeWidth="1.75"
+                opacity="0.9"
               />
 
-              <text x={120} y={130} className="fill-slate-600" fontSize="20" fontWeight="600" opacity="0.6">
-                PA
-              </text>
-              <text x={520} y={150} className="fill-slate-600" fontSize="20" fontWeight="600" opacity="0.6">
-                NY
-              </text>
-              <text x={500} y={380} className="fill-slate-600" fontSize="20" fontWeight="600" opacity="0.6">
-                NJ
+              <text
+                x={MAP_W * 0.42}
+                y={MAP_H * 0.55}
+                fontSize="44"
+                fontWeight="700"
+                fill="#b45309"
+                opacity="0.18"
+                className="pointer-events-none select-none"
+              >
+                TEXAS
               </text>
 
               {REFERENCE_CITIES.map((city) => {
@@ -456,11 +416,11 @@ function EmptyDetail() {
         Pick a marker
       </h3>
       <p>
-        Tap a colored circle to inspect a hail event, or tap a square to see a
-        commercial building&apos;s exposure history.
+        Tap a colored circle to inspect a NOAA-verified hail event, or tap a
+        square to see a commercial building&apos;s exposure history.
       </p>
       <ul className="mt-2 space-y-2 text-xs text-zinc-500 dark:text-zinc-500">
-        <li>· Circle size scales with hail diameter.</li>
+        <li>· Circle size scales with reported hail diameter.</li>
         <li>· Square color reflects roof-age risk.</li>
         <li>· Severe storms pulse on the map.</li>
       </ul>
@@ -479,6 +439,7 @@ function EventDetail({
   onClear: () => void;
   onPickBuilding: (id: string) => void;
 }) {
+  const impactedCount = buildingsImpactedBy(event.id);
   return (
     <div className="flex flex-col gap-4 text-sm">
       <div className="flex items-start justify-between gap-3">
@@ -490,7 +451,7 @@ function EventDetail({
             {event.city}, {event.state}
           </h3>
           <p className="text-zinc-600 dark:text-zinc-400">
-            {dateFmt.format(new Date(event.date))}
+            {event.county} · {dateFmt.format(new Date(event.date))}
           </p>
         </div>
         <button
@@ -504,17 +465,26 @@ function EventDetail({
 
       <dl className="grid grid-cols-2 gap-3 text-zinc-700 dark:text-zinc-300">
         <Stat label="Hail size" value={`${event.hailSizeIn.toFixed(2)}″`} />
-        <Stat label="Duration" value={`${event.durationMin} min`} />
         <Stat
           label="Severity"
           value={SEVERITY_LABEL[event.severity]}
           accent={SEVERITY_COLOR[event.severity]}
         />
+        <Stat label="Reported by" value={event.source} />
         <Stat
-          label="Buildings impacted"
-          value={numberFmt.format(event.buildingsImpacted)}
+          label="Tracked roofs hit"
+          value={numberFmt.format(impactedCount)}
         />
       </dl>
+
+      {event.narrative ? (
+        <blockquote className="rounded-lg border-l-4 border-orange-500 bg-zinc-50 px-3 py-2 text-xs italic text-zinc-700 dark:bg-zinc-950 dark:text-zinc-300">
+          “{event.narrative}”
+          <footer className="mt-1 not-italic text-zinc-500 dark:text-zinc-500">
+            NOAA event #{event.noaaEventId}
+          </footer>
+        </blockquote>
+      ) : null}
 
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-500">
@@ -615,8 +585,8 @@ function BuildingDetail({
         </p>
         {events.length === 0 ? (
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            No verified hail events have struck this address since tracking
-            began.
+            No NOAA-verified hail events have struck within range of this
+            address since tracking began.
           </p>
         ) : (
           <ul className="mt-2 space-y-2">
@@ -632,7 +602,7 @@ function BuildingDetail({
                       {dateFmt.format(new Date(event.date))} · {event.hailSizeIn}″
                     </span>
                     <span className="block text-xs text-zinc-500 dark:text-zinc-400">
-                      {SEVERITY_LABEL[event.severity]}
+                      {event.city}, {event.county} · {SEVERITY_LABEL[event.severity]}
                     </span>
                   </span>
                   <span

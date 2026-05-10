@@ -1,6 +1,7 @@
 import {
   SEVERITY_COLOR,
   SEVERITY_LABEL,
+  buildingsImpactedBy,
   hailEvents,
 } from "@/lib/hail-data";
 
@@ -10,8 +11,6 @@ const dateFmt = new Intl.DateTimeFormat("en-US", {
   year: "numeric",
   timeZone: "UTC",
 });
-
-const numberFmt = new Intl.NumberFormat("en-US");
 
 export function HailEventTable() {
   const sorted = [...hailEvents].sort(
@@ -26,8 +25,10 @@ export function HailEventTable() {
             Recent storms
           </h2>
           <p className="max-w-2xl text-base text-zinc-600 dark:text-zinc-400">
-            Reverse-chronological log of every verified hail event in the
-            tracker. Sizes are reported in maximum observed hail diameter.
+            Reverse-chronological log of every Texas hail event in the tracker,
+            sourced from the NOAA Storm Events Database. Sizes are reported in
+            maximum observed hail diameter; the NOAA event ID is preserved for
+            verification.
           </p>
         </div>
 
@@ -42,16 +43,22 @@ export function HailEventTable() {
                   Location
                 </th>
                 <th scope="col" className="px-4 py-3">
+                  County
+                </th>
+                <th scope="col" className="px-4 py-3">
                   Severity
                 </th>
                 <th scope="col" className="px-4 py-3">
                   Hail size
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Duration
+                  Reported by
                 </th>
                 <th scope="col" className="px-4 py-3">
-                  Buildings impacted
+                  Roofs hit
+                </th>
+                <th scope="col" className="px-4 py-3">
+                  NOAA ID
                 </th>
               </tr>
             </thead>
@@ -67,6 +74,9 @@ export function HailEventTable() {
                   <td className="px-4 py-3 whitespace-nowrap">
                     {event.city}, {event.state}
                   </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-zinc-500 dark:text-zinc-400">
+                    {event.county}
+                  </td>
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center gap-2">
                       <span
@@ -80,17 +90,33 @@ export function HailEventTable() {
                   <td className="px-4 py-3 whitespace-nowrap tabular-nums">
                     {event.hailSizeIn.toFixed(2)}″
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap tabular-nums">
-                    {event.durationMin} min
+                  <td className="px-4 py-3 whitespace-nowrap text-zinc-500 dark:text-zinc-400">
+                    {event.source}
                   </td>
                   <td className="px-4 py-3 tabular-nums">
-                    {numberFmt.format(event.buildingsImpacted)}
+                    {buildingsImpactedBy(event.id)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap font-mono text-xs text-zinc-500 dark:text-zinc-500">
+                    #{event.noaaEventId}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+
+        <p className="mt-4 text-xs text-zinc-500 dark:text-zinc-500">
+          Source:{" "}
+          <a
+            href="https://www.ncdc.noaa.gov/stormevents/"
+            target="_blank"
+            rel="noreferrer"
+            className="underline-offset-2 hover:underline"
+          >
+            NOAA / NCEI Storm Events Database
+          </a>
+          .
+        </p>
       </div>
     </section>
   );

@@ -7,9 +7,9 @@ import { HailStats } from "@/components/hail/hail-stats";
 import { HailTracker } from "@/components/hail/hail-tracker";
 
 export const metadata: Metadata = {
-  title: "Hail tracker — commercial roofs",
+  title: "Texas hail tracker — commercial roofs",
   description:
-    "Verified hail reports across the Tri-State area, mapped to the commercial buildings we monitor.",
+    "NOAA-verified hail reports across Texas, mapped to the commercial buildings we monitor.",
 };
 
 export default function HailPage() {

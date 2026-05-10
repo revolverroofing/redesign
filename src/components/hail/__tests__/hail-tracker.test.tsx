@@ -9,10 +9,10 @@ describe("HailTracker", () => {
     render(<HailTracker />);
 
     expect(
-      screen.getByRole("heading", { level: 2, name: /tri-state hail map/i }),
+      screen.getByRole("heading", { level: 2, name: /texas hail map/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("img", { name: /map of the tri-state area/i }),
+      screen.getByRole("img", { name: /map of texas/i }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("group", { name: /filter by hail severity/i }),

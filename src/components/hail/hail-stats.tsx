@@ -2,6 +2,7 @@ import {
   SEVERITY_COLOR,
   SEVERITY_LABEL,
   type Severity,
+  buildingsImpactedBy,
   commercialBuildings,
   hailEvents,
 } from "@/lib/hail-data";
@@ -13,7 +14,11 @@ export function HailStats() {
     (b) => b.roofAgeYears >= 13,
   ).length;
   const totalImpacted = hailEvents.reduce(
-    (sum, event) => sum + event.buildingsImpacted,
+    (sum, event) => sum + buildingsImpactedBy(event.id),
+    0,
+  );
+  const maxHail = hailEvents.reduce(
+    (max, event) => Math.max(max, event.hailSizeIn),
     0,
   );
 
@@ -31,19 +36,19 @@ export function HailStats() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card
-            label="Verified storms"
+            label="NOAA-verified storms"
             value={hailEvents.length.toString()}
-            sub="Cross-checked with NWS and ground reports"
+            sub="From the NCEI Storm Events Database"
           />
           <Card
-            label="Buildings impacted (cumulative)"
+            label="Tracked roofs in storm paths"
             value={numberFmt.format(totalImpacted)}
-            sub="Across the current tracking window"
+            sub="Sum of building hits across all events"
           />
           <Card
-            label="High-risk roofs"
-            value={buildingsAtHighRisk.toString()}
-            sub="13+ year-old systems on our watchlist"
+            label="Largest reported hail"
+            value={`${maxHail.toFixed(2)}″`}
+            sub={`${buildingsAtHighRisk} high-risk roofs (13+ yr) on the watchlist`}
           />
           <SeverityBreakdown
             totals={severityTotals}
