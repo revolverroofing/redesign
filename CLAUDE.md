@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > The `@AGENTS.md` import above pulls in a critical warning: this project pins **Next.js 16.2.4**, which has breaking changes vs. older Next.js conventions in training data. Before writing routing, data-fetching, caching, or `<Image>` code, check `node_modules/next/dist/docs/` for the version-accurate guide rather than relying on memory.
 
+## Product direction
+
+The repo is being repositioned from a single-company roofing marketing page into a **HailTrace × LoopNet mashup**: a searchable property database overlaid with hail/storm event data. Primary users are roofing contractors hunting storm-damaged leads; secondary audience is property owners checking exposure.
+
+The current `Hero` / `Services` / `TrustStrip` / `CtaSection` components on `/` are placeholder marketing content from the initial scaffold. They are **not load-bearing** and will be replaced as map, search, and listings surfaces are built. Prefer adding new surfaces (e.g. `/map`, `/search`, `/p/[id]`, `/storm/[id]`) over evolving the marketing components in place.
+
 ## Stack
 
 - **Next.js 16.2.4** (App Router, `src/app`) on **React 19.2.4**
