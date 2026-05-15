@@ -44,7 +44,7 @@ export default function OpengraphImage() {
               display: "flex",
             }}
           >
-            Roofs that last. Service that's on time.
+            Roofs that last. Service that&apos;s on time.
           </div>
           <div
             style={{
