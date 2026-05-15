@@ -16,13 +16,28 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const description = `Licensed, insured, family-owned roofing across the ${business.serviceAreaSummary}. Free estimates and a ${business.warranty.years}-year workmanship warranty.`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(business.url),
   title: {
     default: `${business.name} — Residential & commercial roofing`,
     template: `%s · ${business.name}`,
   },
-  description: `Licensed, insured, family-owned roofing across the ${business.serviceAreaSummary}. Free estimates and a ${business.warranty.years}-year workmanship warranty.`,
+  description,
+  openGraph: {
+    type: "website",
+    siteName: business.name,
+    locale: "en_US",
+    title: `${business.name} — Residential & commercial roofing`,
+    description,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${business.name} — Residential & commercial roofing`,
+    description,
+  },
 };
 
 export default function RootLayout({

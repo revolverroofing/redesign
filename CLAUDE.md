@@ -49,11 +49,18 @@ src/
     page.tsx                   # home route: Hero + Services + TrustStrip + CtaSection
     globals.css                # Tailwind import + @theme tokens + body defaults
     favicon.ico
+    opengraph-image.tsx        # dynamic OG image (next/og ImageResponse) — used by all routes
+    sitemap.ts                 # /sitemap.xml — derived from business.url + content data
+    robots.ts                  # /robots.txt — allow-all + sitemap reference
+    not-found.tsx              # branded 404 with tel: CTA
+    llms.txt/route.ts          # /llms.txt — markdown capability summary for AI agents
     actions/
-      lead.ts                  # 'use server' Server Action for the contact form
-      __tests__/lead.test.ts   # action validation + delivery tests
+      lead.ts                  # 'use server' Server Action for the consumer contact form
+      bid.ts                   # 'use server' Server Action for GC bid invitations
+      __tests__/               # action validation + delivery tests
     services/[slug]/page.tsx   # SSG service-detail pages (residential / commercial / repairs)
     areas/[slug]/page.tsx      # SSG service-area pages (tri-state)
+    contractors/page.tsx       # GC-targeted landing page with <BidForm /> + commercial Service JSON-LD
   components/
     site-header.tsx            # sticky top nav, visible tel: link, "Get a Quote" CTA
     site-footer.tsx            # contact line + copyright (NAP from business config)
@@ -61,14 +68,19 @@ src/
     services.tsx               # 3-up grid linking to /services/[slug]
     trust-strip.tsx            # 4-up trust signals (license #s, insurance, warranty, founded)
     cta-section.tsx            # final dark CTA with <LeadForm> + tel/email/hours
-    lead-form.tsx              # 'use client' form using useActionState + honeypot
-    structured-data.tsx        # JSON-LD <script> emitting RoofingContractor schema
+    lead-form.tsx              # 'use client' consumer form using useActionState + honeypot
+    bid-form.tsx               # 'use client' GC bid-invitation form (richer, routes to estimating)
+    structured-data.tsx        # JSON-LD RoofingContractor schema — rendered in root layout
+    commercial-service-schema.tsx  # JSON-LD Service schema with NAICS + CSI codes — used on /contractors
     __tests__/                 # vitest specs colocated by component
   lib/
-    business.ts                # SINGLE SOURCE OF TRUTH for NAP, license, hours, rating, etc.
+    business.ts                # SINGLE SOURCE OF TRUTH for NAP, license, hours, rating, commercial profile
     lead-delivery.ts           # deliverLead() — replace stub with CRM/email integration
+    bid-delivery.ts            # deliverBid() — replace stub; routes to estimating, not residential intake
     services-content.ts        # Service page copy keyed by slug; drives generateStaticParams
     areas-content.ts           # Area page copy keyed by slug; drives generateStaticParams
+docs/
+  commercial-strategy.md       # Operational guide: ITB platforms, LinkedIn, AI surface area
 e2e/
   home.spec.ts                 # playwright smoke test against `next start`
 .github/workflows/ci.yml       # CI: verify (lint/typecheck/test/build) + e2e jobs
@@ -79,7 +91,10 @@ There is no `public/` directory yet — the only static asset is `src/app/favico
 Key patterns:
 
 - **Business data lives in `src/lib/business.ts`.** Phone, email, address, license numbers, hours, rating, certifications. Anything tagged `REPLACE_BEFORE_SHIPPING` is a placeholder — `grep` that string before going live. The header tel: link, footer NAP, hero copy, trust strip, CTA section, and JSON-LD all read from this file.
-- **JSON-LD is rendered in `<body>` from `app/layout.tsx`.** `<StructuredData />` emits a `RoofingContractor` payload and escapes `<` to `<` per the Next.js JSON-LD guide. Validate at https://validator.schema.org/ after editing `business.ts` or `structured-data.tsx`.
+- **JSON-LD is rendered in `<body>` from `app/layout.tsx`.** `<StructuredData />` emits a `RoofingContractor` payload and escapes `<` to `<` per the Next.js JSON-LD guide. The `/contractors` page additionally renders `<CommercialServiceSchema />` — a `Service` payload with NAICS 238160 + CSI MasterFormat 07 50 00 codes that procurement search and AI procurement tools filter on. Validate at https://validator.schema.org/ after editing `business.ts` or either schema component.
+- **OG image is dynamic via `next/og`.** `app/opengraph-image.tsx` returns an `ImageResponse` rendered with Satori. Two Satori gotchas: (a) every `<div>` with multiple children needs explicit `display: "flex"` (or `"contents"`/`"none"`); (b) non-ASCII glyphs (★, ·, em-dashes) require a downloaded font and will fail the build if you use them without supplying one. Stick to ASCII or load fonts explicitly per the Next OG image guide.
+- **Two Server Actions, two delivery functions.** Consumer form posts to `submitLead` → `deliverLead`; GC bid form posts to `submitBid` → `deliverBid`. They are separate so estimating never has to filter through residential intake. Both default to console-logging stubs.
+- **`/llms.txt` is the AI-discovery surface.** A markdown summary of capabilities, NAICS/CSI codes, contact info, and routing notes for AI agents. Served from `app/llms.txt/route.ts` so it composes from `business.ts` and the content data files automatically — don't hand-author a static llms.txt.
 - **Lead form uses Server Actions.** The `<form action={formAction}>` in `lead-form.tsx` posts to `submitLead` (`src/app/actions/lead.ts`) via `useActionState`. The action validates server-side, applies a honeypot, and hands valid leads to `deliverLead` in `src/lib/lead-delivery.ts` — that single function is the integration point for Resend / Zapier / your CRM.
 - **Layout owns the chrome.** `SiteHeader`, `SiteFooter`, and `StructuredData` live in `app/layout.tsx`, so they persist across all routes. New pages render only their own sections from their `page.tsx`.
 - **Components are server components by default.** `lead-form.tsx` is the only `"use client"` file (it needs `useActionState` + form state). Don't add the directive unless a component needs browser APIs, event handlers with state, or React hooks beyond `use()`.

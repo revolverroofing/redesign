@@ -59,6 +59,36 @@ export const business = {
   certifications: [] as ReadonlyArray<Certification>,
 
   warranty: { years: 25, scope: "workmanship" },
+
+  /**
+   * Commercial / GC procurement profile. Surfaced on /contractors,
+   * the bid-invitation Service JSON-LD, and llms.txt.
+   */
+  commercial: {
+    // NAICS 238160 = Roofing Contractors. CSI MasterFormat 07 50 00 =
+    // Membrane Roofing. Both are standard codes used in commercial
+    // procurement search filters.
+    naicsCode: "238160",
+    csiCode: "07 50 00",
+    systems: [
+      "TPO (60 mil & 80 mil)",
+      "EPDM (mechanically attached & ballasted)",
+      "Modified bitumen (cap sheet & SBS)",
+      "Built-up roofing (BUR)",
+      "PVC single-ply",
+      "Metal standing-seam",
+    ],
+    capacity: {
+      largestProjectSqFt: 480_000,
+      activeCrews: 6,
+      bondingLimit: REPLACE_BEFORE_SHIPPING,
+    },
+    references: [
+      "Property managers, school districts, and municipal facilities",
+      "Big-box retail, light industrial, and distribution centers",
+      "Multi-family and HOA boards",
+    ],
+  },
 } as const;
 
 export type Business = typeof business;

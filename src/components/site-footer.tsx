@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { business } from "@/lib/business";
 
 export function SiteFooter() {
@@ -7,7 +8,13 @@ export function SiteFooter() {
         <p>
           &copy; {new Date().getFullYear()} {business.name}. All rights reserved.
         </p>
-        <div className="flex gap-6">
+        <div className="flex flex-wrap gap-6">
+          <Link
+            href="/contractors"
+            className="hover:text-zinc-950 dark:hover:text-white"
+          >
+            For general contractors
+          </Link>
           <a
             href={`tel:${business.phoneE164}`}
             className="hover:text-zinc-950 dark:hover:text-white"

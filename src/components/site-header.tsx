@@ -3,6 +3,7 @@ import { business } from "@/lib/business";
 
 const navLinks = [
   { href: "/#services", label: "Services" },
+  { href: "/contractors", label: "For GCs" },
   { href: "/#why-us", label: "Why Us" },
   { href: "/#contact", label: "Contact" },
 ];
