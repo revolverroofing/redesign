@@ -22,5 +22,10 @@ test("lead form surfaces validation errors for missing fields", async ({ page })
   // (HTML required attributes are bypassed by `noValidate`).
   await page.getByRole("button", { name: /request an estimate/i }).click();
 
-  await expect(page.getByRole("alert")).toContainText(/highlighted fields/i);
+  // Target the form's error paragraph directly — Next.js renders an empty
+  // <div role="alert" id="__next-route-announcer__"> on every page, which
+  // collides with a bare getByRole("alert") under strict mode.
+  await expect(page.locator("#lead-form-error")).toContainText(
+    /highlighted fields/i,
+  );
 });
