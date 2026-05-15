@@ -11,6 +11,6 @@ describe("Hero", () => {
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: /get a free estimate/i }),
-    ).toHaveAttribute("href", "#contact");
+    ).toHaveAttribute("href", "/#contact");
   });
 });

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { StructuredData } from "@/components/structured-data";
+import { business } from "@/lib/business";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,12 +17,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(business.url),
   title: {
-    default: "Revolver Roofing — Residential & commercial roofing",
-    template: "%s · Revolver Roofing",
+    default: `${business.name} — Residential & commercial roofing`,
+    template: `%s · ${business.name}`,
   },
-  description:
-    "Licensed, insured, family-owned roofing across the Tri-State area. Free estimates and a 25-year workmanship warranty.",
+  description: `Licensed, insured, family-owned roofing across the ${business.serviceAreaSummary}. Free estimates and a ${business.warranty.years}-year workmanship warranty.`,
 };
 
 export default function RootLayout({
@@ -34,6 +36,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <StructuredData />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />
