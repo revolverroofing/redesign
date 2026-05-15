@@ -53,7 +53,24 @@ jobs:
 
       - run: pnpm build
 
-      - run: pnpm test:e2e
+      - name: Run Playwright tests
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm test:e2e 2>&1 | tee /tmp/playwright.log
+
+      - name: Surface output on workflow summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "## Playwright output"
+            echo ""
+            echo '```'
+            # Tail to last 200 lines to stay under the 1 MB step-summary cap
+            tail -n 200 /tmp/playwright.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - if: failure()
         uses: actions/upload-artifact@v4
