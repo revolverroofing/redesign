@@ -16,14 +16,31 @@ export type BidInvitation = {
 };
 
 /**
- * Where bid invitations land. Replace this with the real integration:
- *   - POST to procurement inbox / CRM
- *   - Slack channel for the estimating team
- *   - Auto-create an opportunity in the bid management system
+ * Posts the bid invitation to Zapier when BID_ZAPIER_HOOK_URL is set in
+ * the environment (Zap → Webhooks by Zapier → Catch Hook). The Zap
+ * should route to the estimating inbox / Slack channel — keep this
+ * separate from LEAD_ZAPIER_HOOK_URL so residential intake never has
+ * to filter commercial bids.
  *
- * Distinct from `deliverLead` because commercial bids should route to
- * estimating, not the residential intake queue.
+ * Falls back to console logging when the env var is unset so dev
+ * installs see submissions without configuration.
  */
 export async function deliverBid(invitation: BidInvitation): Promise<void> {
-  console.info("[bid]", invitation);
+  const url = process.env.BID_ZAPIER_HOOK_URL;
+  if (!url) {
+    console.info("[bid] BID_ZAPIER_HOOK_URL not set; logging only:", invitation);
+    return;
+  }
+
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(invitation),
+    signal: AbortSignal.timeout(10_000),
+  });
+
+  if (!response.ok) {
+    console.error("[bid] zapier hook rejected", response.status, invitation);
+    throw new Error(`Zapier hook returned ${response.status}`);
+  }
 }

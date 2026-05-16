@@ -4,6 +4,32 @@ This is operational guidance, not code. The website work in this repo is
 the *anchor* for an outbound presence; the actual bid volume comes from
 being present on the platforms below and from a few high-trust signals.
 
+## Wiring up lead delivery
+
+Both forms (`<LeadForm />` for residential, `<BidForm />` for GC bids)
+post to Zapier webhooks when the corresponding env var is set:
+
+| Env var                  | Routes to                             |
+| ------------------------ | ------------------------------------- |
+| `LEAD_ZAPIER_HOOK_URL`   | Residential intake (deliverLead)      |
+| `BID_ZAPIER_HOOK_URL`    | Estimating queue (deliverBid)         |
+
+In Zapier:
+
+1. Create a new Zap → trigger **Webhooks by Zapier → Catch Hook** →
+   copy the custom URL.
+2. Wire the action steps to whatever owns the lead (Gmail / Outlook /
+   Slack channel / HubSpot / a Google Sheet to triage from). Map the
+   incoming fields — the JSON shape matches the `Lead` / `BidInvitation`
+   types in `src/lib/lead-delivery.ts` and `src/lib/bid-delivery.ts`.
+3. Drop the webhook URL into the deployment's env var settings (Vercel /
+   Netlify dashboard, or `.env.local` for local dev).
+
+If the env var is unset, deliveries log to the server console — useful
+during local development so you can see submissions without setting up
+a Zap. A non-2xx response from Zapier propagates as a generic error to
+the user with a "please call us" fallback.
+
 ## What the website does for you
 
 The `/contractors` route is the conversion endpoint. Every channel below
