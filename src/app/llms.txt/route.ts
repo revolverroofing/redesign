@@ -47,6 +47,10 @@ export function GET() {
   sections.push(
     `- Largest single-phase project: ${business.commercial.capacity.largestProjectSqFt.toLocaleString()} sq ft`,
   );
+  const bonding = business.commercial.capacity.bondingLimit;
+  sections.push(
+    `- Bonding capacity: $${bonding.perProject.toLocaleString()} per project / $${bonding.aggregate.toLocaleString()} aggregate`,
+  );
   sections.push("- Systems:");
   for (const system of business.commercial.systems) {
     sections.push(`  - ${system}`);

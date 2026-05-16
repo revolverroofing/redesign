@@ -81,7 +81,7 @@ export const business = {
     capacity: {
       largestProjectSqFt: 480_000,
       activeCrews: 6,
-      bondingLimit: REPLACE_BEFORE_SHIPPING,
+      bondingLimit: { perProject: 100_000, aggregate: 300_000 },
     },
     references: [
       "Property managers, school districts, and municipal facilities",

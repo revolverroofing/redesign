@@ -7,6 +7,7 @@ import { business } from "@/lib/business";
  * commercial roofing query without parsing prose.
  */
 export function CommercialServiceSchema() {
+  const bonding = business.commercial.capacity.bondingLimit;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -22,6 +23,26 @@ export function CommercialServiceSchema() {
     category: [
       `NAICS ${business.commercial.naicsCode}`,
       `CSI MasterFormat ${business.commercial.csiCode}`,
+    ],
+    additionalProperty: [
+      {
+        "@type": "PropertyValue",
+        name: "Bonding capacity, per project",
+        value: bonding.perProject,
+        unitCode: "USD",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Bonding capacity, aggregate",
+        value: bonding.aggregate,
+        unitCode: "USD",
+      },
+      {
+        "@type": "PropertyValue",
+        name: "Largest project completed",
+        value: business.commercial.capacity.largestProjectSqFt,
+        unitText: "sq ft",
+      },
     ],
     hasOfferCatalog: {
       "@type": "OfferCatalog",

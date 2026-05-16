@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { BidForm } from "@/components/bid-form";
 import { CommercialServiceSchema } from "@/components/commercial-service-schema";
-import { business, REPLACE_BEFORE_SHIPPING } from "@/lib/business";
+import { business } from "@/lib/business";
+
+const usd = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
 
 export const metadata: Metadata = {
   title: "For General Contractors — Invite us to bid",
@@ -11,10 +17,7 @@ export const metadata: Metadata = {
 
 export default function ContractorsPage() {
   const { commercial } = business;
-  const bondingLimit =
-    commercial.capacity.bondingLimit === REPLACE_BEFORE_SHIPPING
-      ? null
-      : commercial.capacity.bondingLimit;
+  const bonding = commercial.capacity.bondingLimit;
 
   return (
     <>
@@ -73,14 +76,15 @@ export default function ContractorsPage() {
                 </dt>
                 <dd>{commercial.capacity.activeCrews}, fully in-house</dd>
               </div>
-              {bondingLimit && (
-                <div>
-                  <dt className="font-semibold text-zinc-900 dark:text-zinc-100">
-                    Bonding limit
-                  </dt>
-                  <dd>{bondingLimit}</dd>
-                </div>
-              )}
+              <div>
+                <dt className="font-semibold text-zinc-900 dark:text-zinc-100">
+                  Bonding capacity
+                </dt>
+                <dd>
+                  {usd.format(bonding.perProject)} per project ·{" "}
+                  {usd.format(bonding.aggregate)} aggregate
+                </dd>
+              </div>
               <div>
                 <dt className="font-semibold text-zinc-900 dark:text-zinc-100">
                   Project profiles
