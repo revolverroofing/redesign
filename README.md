@@ -28,3 +28,10 @@ Before the first e2e run: `pnpm exec playwright install chromium`.
 ## Project layout
 
 See [`CLAUDE.md`](./CLAUDE.md) for the full architecture overview, testing conventions, and Next.js 16-specific notes.
+
+## UPS / FedEx shipping connector
+
+This repo includes a unified UPS + FedEx shipping connector with both Next.js
+API routes and a Model Context Protocol server that exposes the tools to
+Claude. See [`docs/shipping-connector.md`](./docs/shipping-connector.md) for
+setup, credentials, and Claude Desktop configuration.
