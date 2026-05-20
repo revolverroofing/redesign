@@ -1,0 +1,13 @@
+{
+  "name": "redesign-shipping-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server that exposes UPS and FedEx shipping operations to Claude.",
+  "bin": {
+    "shipping-mcp": "./server.mjs"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  }
+}
